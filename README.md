@@ -1,4 +1,10 @@
-# Display Manager
+Display Manager
+===============
+
+[![License][license-img]][license-url]
+[![GitHub Release][release-img]][release-url]
+[![Github Releases][downloads-img]][downloads-url]
+[![GitHub Issues][issues-img]][issues-url]
 
 > A command line tool for recording and restoring Windows display configurations
 
@@ -51,3 +57,12 @@ The rest was easy. Thanks a lot guys, you saved my day!
 This project is released under the MIT license.
 
 Copyright © by Tobias Kiertscher <dev@mastersign.de>.
+
+[release-url]: https://github.com/mastersign/Mastersign.DisplayManager/releases/latest/
+[release-img]: https://img.shields.io/github/release/mastersign/Mastersign.DisplayManager.svg?style=flat-square
+[downloads-url]: https://github.com/mastersign/Mastersign.DisplayManager/releases/latest/
+[downloads-img]: https://img.shields.io/github/downloads/mastersign/Mastersign.DisplayManager/total.svg?style=flat-square
+[license-url]: https://github.com/mastersign/Mastersign.DisplayManager/blob/master/LICENSE.md
+[license-img]: https://img.shields.io/github/license/mastersign/Mastersign.DisplayManager.svg?style=flat-square
+[issues-url]: https://github.com/mastersign/Mastersign.DisplayManager/issues
+[issues-img]: https://img.shields.io/github/issues/mastersign/Mastersign.DisplayManager.svg?style=flat-square
