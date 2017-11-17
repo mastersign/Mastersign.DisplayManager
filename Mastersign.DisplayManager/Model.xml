@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://scaleton.mastersign.de/2014/model"
+       xsi:schemaLocation="http://scaleton.mastersign.de/2014/model http://scaleton.mastersign.de/Scaleton_Model_2014.xsd">
+
+  <ReferencedTypes>
+    <ReferencedType id="stateFlags" name="Mastersign.DisplayManager.WinApi.DisplayDeviceStateFlags" />
+    <ReferencedType id="devModeFields" name="Mastersign.DisplayManager.WinApi.DM_FIELDS" />
+    <ReferencedType id="orientation" name="Mastersign.DisplayManager.WinApi.DMDISPLAYORIENTATION" />
+  </ReferencedTypes>
+
+  <Configuration modelType="ChangeTracking">
+    <ChangeTrackingConfiguration level="Notification" />
+    <CollectionType>BindingList</CollectionType>
+    <OverrideToString value="false" />
+    <IsEquatable value="true" overrideOperators="false" />
+  </Configuration>
+
+  <Types>
+
+    <Class name="Point">
+      <Configuration>
+        <IsEquatable overrideOperators="true"/>
+      </Configuration>
+      <Property name="X" type="Int32" immutable="true" definesEquality="true" />
+      <Property name="Y" type="Int32" immutable="true" definesEquality="true" />
+    </Class>
+
+    <Class name="DisplayDevice">
+      <Property name="Id" type="UInt32" />
+      <Property name="DeviceName" />
+      <Property name="DeviceString" />
+      <Property name="StateFlags" type="stateFlags" />
+      <Property name="DeviceID" />
+      <Property name="DeviceKey" />
+    </Class>
+
+    <Class name="MonitorDevice">
+      <Property name="Id" type="UInt32" />
+      <Property name="DeviceName" />
+      <Property name="DeviceString" />
+      <Property name="StateFlags" type="stateFlags" />
+      <Property name="DeviceID" />
+      <Property name="DeviceKey" />
+    </Class>
+
+    <Class name="DisplaySetting">
+      <Property name="Id" type="Int32" />
+      <Property name="DeviceName" />
+      <Property name="Fields" type="devModeFields" />
+      <Property name="Position" type="Point" />
+      <Property name="Orientation" type="orientation" />
+      <Property name="DisplayFixedOutput" type="Int32" />
+      <Property name="LogPixels" type="Int16" />
+      <Property name="BitsPerPel" type="Int32" />
+      <Property name="PelsWidth" type="Int32" />
+      <Property name="PelsHeight" type="Int32" />
+      <Property name="DisplayFlags" type="Int32" />
+      <Property name="Nup" type="Int32" />
+      <Property name="DisplayFrequency" type="Int32" />
+    </Class>
+
+    <Class name="DisplayConfiguration">
+      <Property name="Device" type="DisplayDevice" />
+      <Property name="Setting" type="DisplaySetting" />
+    </Class>
+
+  </Types>
+</Model>
