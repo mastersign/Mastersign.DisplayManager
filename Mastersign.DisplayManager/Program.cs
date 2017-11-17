@@ -1,6 +1,7 @@
 ﻿using Mastersign.DisplayManager.WinApi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -76,6 +77,13 @@ namespace Mastersign.DisplayManager
             {
                 config = (DisplayConfiguration)s.Deserialize(f);
             }
+
+            Debug.WriteLine("---- LOADED CONFIGURATION ---------------");
+            Debug.WriteLine(config);
+            Debug.WriteLine("-----PATCHED CONFIGURATION --------------");
+            Manager.PatchDisplayConfig(config);
+            Debug.WriteLine(config);
+
             Manager.SetDisplayConfig(config);
         });
     }
