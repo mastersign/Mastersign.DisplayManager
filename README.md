@@ -4,8 +4,8 @@
 
 ## Use Case
 
-* You have a Windows 7/8/10 PC with a couple of monitors / flatscreen TVs attanched
-* You are not always using all of your monitors but you like to switch between different monitor configurations
+* You have a Windows 7/8/10 PC with a couple of monitors / flatscreen TVs attached
+* You are not always using all of your monitors, instead you like to switch between different monitor configurations
 
 ## Usage
 
@@ -33,7 +33,7 @@ It only uses the methods
 `QueryDisplayConfig`, `GetDisplayConfigBufferSize` and `SetDisplayConfig` in the `User32.dll`.
 It does nothing more then to query the current configuration
 and store it with the .NET XML serialization into a file.
-For restore it just loads the configuration with .NET XML deserializaton and passes them to the Windows API.
+For restore, it just loads the configuration with .NET XML deserializaton and passes them to the Windows API.
 
 ## Acknowledgements
 
