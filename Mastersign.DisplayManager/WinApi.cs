@@ -8,6 +8,8 @@ using static Mastersign.DisplayManager.ConsoleFormat;
 
 namespace Mastersign.DisplayManager.WinApi
 {
+    // https://stackoverflow.com/questions/16082330/communicating-with-windows7-display-api
+
     static class User32
     {
         [DllImport("User32.dll")]
@@ -31,29 +33,7 @@ namespace Mastersign.DisplayManager.WinApi
 
         [DllImport("User32.dll")]
         public static extern int GetDisplayConfigBufferSizes(QueryDisplayFlags flags, out int numPathArrayElements, out int numModeInfoArrayElements);
-
-        [DllImport("user32.dll")]
-        public static extern bool EnumDisplayDevices(string lpDevice, uint iDevNum, ref DISPLAY_DEVICE lpDisplayDevice, uint dwFlags);
-
-        [DllImport("user32.dll")]
-        public static extern bool EnumDisplaySettings(string deviceName, int iModeNum, ref DEVMODE devMode);
-
-        [DllImport("user32.dll")]
-        public static extern bool EnumDisplaySettingsEx(string deviceName, int iModeNum, ref DEVMODE devMode, uint dwFlags);
-
-        [DllImport("user32.dll")]
-        public static extern DISP_CHANGE ChangeDisplaySettingsEx(string lpszDeviceName, ref DEVMODE lpDevMode, IntPtr hwnd, ChangeDisplaySettingsFlags dwflags, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        // A signature for ChangeDisplaySettingsEx with a DEVMODE struct as the second parameter won't allow you to pass in IntPtr.Zero, so create an overload
-        public static extern DISP_CHANGE ChangeDisplaySettingsEx(string lpszDeviceName, IntPtr lpDevMode, IntPtr hwnd, ChangeDisplaySettingsFlags dwflags, IntPtr lParam);
-
-        public const int EDD_GET_DEVICE_INTERFACE_NAME = 1;
-        public const int EDS_ENUM_CURRENT_SETTINGS = -1;
-        public const int EDS_ENUM_REGISTRY_SETTINGS = -2;
     }
-
-    // https://stackoverflow.com/questions/16082330/communicating-with-windows7-display-api
 
     [StructLayout(LayoutKind.Sequential)]
     public struct LUID
@@ -121,7 +101,7 @@ namespace Mastersign.DisplayManager.WinApi
     }
 
     [Flags]
-    public enum DisplayConfigSourceStatus
+    public enum DisplayConfigSourceStatus : int
     {
         Zero = 0x0,
         InUse = 0x00000001
@@ -199,15 +179,15 @@ namespace Mastersign.DisplayManager.WinApi
     [StructLayout(LayoutKind.Sequential)]
     public struct DisplayConfigPathInfo
     {
-        public DisplayConfigPathSourceInfo sourceInfo;
-        public DisplayConfigPathTargetInfo targetInfo;
-        public uint flags;
+        public DisplayConfigPathSourceInfo SourceInfo;
+        public DisplayConfigPathTargetInfo TargetInfo;
+        public uint Flags;
 
         public override string ToString()
         {
             var nl = Environment.NewLine;
-            return $"SourceInfo:{nl}{Indent(sourceInfo, 0, isArrayItem: false)}{nl}" +
-                $"TargetInfo:{nl}{Indent(targetInfo, 0, isArrayItem: false)}";
+            return $"SourceInfo:{nl}{Indent(SourceInfo, 0, isArrayItem: false)}{nl}" +
+                $"TargetInfo:{nl}{Indent(TargetInfo, 0, isArrayItem: false)}";
         }
     }
 
@@ -225,36 +205,36 @@ namespace Mastersign.DisplayManager.WinApi
     public struct DisplayConfigModeInfo
     {
         [FieldOffset((0))]
-        public DisplayConfigModeInfoType infoType;
+        public DisplayConfigModeInfoType InfoType;
 
         [FieldOffset(4)]
-        public uint id;
+        public uint Id;
 
         [FieldOffset(8)]
-        public LUID adapterId;
+        public LUID AdapterId;
 
         [FieldOffset(16)]
-        public DisplayConfigTargetMode targetMode;
+        public DisplayConfigTargetMode TargetMode;
 
         [FieldOffset(16)]
-        public DisplayConfigSourceMode sourceMode;
+        public DisplayConfigSourceMode SourceMode;
 
         public override string ToString()
         {
             var nl = Environment.NewLine;
-            return $"InfoType: {infoType}{nl}" +
-                $"Id: {id}{nl}" +
-                $"AdapterId: {adapterId}{nl}" +
-                $"TargetMode:{nl}{Indent(targetMode, 0, isArrayItem: false)}{nl}" +
-                $"SourceMode:{nl}{Indent(sourceMode, 0, isArrayItem: false)}";
+            return $"InfoType: {InfoType}{nl}" +
+                $"Id: {Id}{nl}" +
+                $"AdapterId: {AdapterId}{nl}" +
+                $"TargetMode:{nl}{Indent(TargetMode, 0, isArrayItem: false)}{nl}" +
+                $"SourceMode:{nl}{Indent(SourceMode, 0, isArrayItem: false)}";
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct DisplayConfig2DRegion
     {
-        public uint cx;
-        public uint cy;
+        public uint X;
+        public uint Y;
     }
 
     [Flags]
@@ -298,24 +278,27 @@ namespace Mastersign.DisplayManager.WinApi
     [StructLayout(LayoutKind.Sequential)]
     public struct DisplayConfigVideoSignalInfo
     {
-        public long pixelRate;
-        public DisplayConfigRational hSyncFreq;
-        public DisplayConfigRational vSyncFreq;
-        public DisplayConfig2DRegion activeSize;
-        public DisplayConfig2DRegion totalSize;
+        public long PixelRate;
+        public DisplayConfigRational HSyncFreq;
+        public DisplayConfigRational VSyncFreq;
+        public DisplayConfig2DRegion ActiveSize;
+        public DisplayConfig2DRegion TotalSize;
 
-        public D3DmdtVideoSignalStandard videoStandard;
-        public DisplayConfigScanLineOrdering ScanLineOrdering;
+        public uint videoStandard;
+        public uint scanLineOrdering;
+
+        public D3DmdtVideoSignalStandard VideoStandard => (D3DmdtVideoSignalStandard)videoStandard;
+        public DisplayConfigScanLineOrdering ScanLineOrdering => (DisplayConfigScanLineOrdering)scanLineOrdering;
 
         public override string ToString()
         {
             var nl = Environment.NewLine;
-            return $"PixelRate: {pixelRate}{nl}" +
-                $"HSyncFreq: {hSyncFreq.numerator}/{hSyncFreq.denominator}{nl}" +
-                $"VSyncFreq: {vSyncFreq.numerator}/{vSyncFreq.denominator}{nl}" +
-                $"ActiveSize: {activeSize.cx}, {activeSize.cy}{nl}" +
-                $"TotalSize: {totalSize.cx}, {totalSize.cy}{nl}" +
-                $"VideoStandard: {videoStandard}{nl}" +
+            return $"PixelRate: {PixelRate}{nl}" +
+                $"HSyncFreq: {HSyncFreq.numerator}/{HSyncFreq.denominator}{nl}" +
+                $"VSyncFreq: {VSyncFreq.numerator}/{VSyncFreq.denominator}{nl}" +
+                $"ActiveSize: {ActiveSize.X}, {ActiveSize.Y}{nl}" +
+                $"TotalSize: {TotalSize.X}, {TotalSize.Y}{nl}" +
+                $"VideoStandard: {VideoStandard}{nl}" +
                 $"ScanLineOrdering: {ScanLineOrdering}";
         }
     }
@@ -323,85 +306,94 @@ namespace Mastersign.DisplayManager.WinApi
     [StructLayout(LayoutKind.Sequential)]
     public struct DisplayConfigTargetMode
     {
-        public DisplayConfigVideoSignalInfo targetVideoSignalInfo;
+        public DisplayConfigVideoSignalInfo TargetVideoSignalInfo;
 
         public override string ToString()
         {
             var nl = Environment.NewLine;
-            return $"TargetVideoSignalInfo:{nl}{Indent(targetVideoSignalInfo, 0, isArrayItem: false)}";
+            return $"TargetVideoSignalInfo:{nl}{Indent(TargetVideoSignalInfo, 0, isArrayItem: false)}";
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct PointL
     {
-        public int x;
-        public int y;
+        public int X;
+        public int Y;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct DisplayConfigSourceMode
     {
-        public uint width;
-        public uint height;
-        public uint pixelFormat; // DisplayConfigPixelFormat
-        public PointL position;
+        public uint Width;
+        public uint Height;
+        public uint pixelFormat;
+        public PointL Position;
+
+        public DisplayConfigPixelFormat PixelFormat => (DisplayConfigPixelFormat)pixelFormat;
 
         public override string ToString()
         {
             var nl = Environment.NewLine;
-            return $"Size: {width}, {height}{nl}" +
-                $"PixelFormat: {(DisplayConfigPixelFormat)pixelFormat}{nl}" +
-                $"Position: {position.x}, {position.y}";
+            return $"Size: {Width}, {Height}{nl}" +
+                $"PixelFormat: {PixelFormat}{nl}" +
+                $"Position: {Position.X}, {Position.Y}";
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct DisplayConfigPathSourceInfo
     {
-        public LUID adapterId;
-        public uint id;
-        public uint modeInfoIdx;
+        public LUID AdapterId;
+        public uint Id;
+        public uint ModeInfoIdx;
+        public int statusFlags;
 
-        public DisplayConfigSourceStatus statusFlags;
+        public DisplayConfigSourceStatus StatusFlags => (DisplayConfigSourceStatus)statusFlags;
 
         public override string ToString()
         {
             var nl = Environment.NewLine;
-            return $"AdapterId: {adapterId}{nl}" +
-                $"Id: {id}{nl}" +
-                $"ModeInfoIdx: {modeInfoIdx}";
+            return $"AdapterId: {AdapterId}{nl}" +
+                $"Id: {Id}{nl}" +
+                $"ModeInfoIdx: {ModeInfoIdx}";
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct DisplayConfigPathTargetInfo
     {
-        public LUID adapterId;
-        public uint id;
-        public uint modeInfoIdx;
-        public DisplayConfigVideoOutputTechnology outputTechnology;
-        public DisplayConfigRotation rotation;
-        public DisplayConfigScaling scaling;
-        public DisplayConfigRational refreshRate;
-        public DisplayConfigScanLineOrdering scanLineOrdering;
+        public LUID AdapterId;
+        public uint Id;
+        public uint ModeInfoIdx;
+        public uint outputTechnology;
+        public uint rotation;
+        public uint scaling;
+        public DisplayConfigRational RefreshRate;
+        public uint scanLineOrdering;
 
-        public bool targetAvailable;
-        public DisplayConfigTargetStatus statusFlags;
+        public bool TargetAvailable;
+        public uint statusFlags;
+
+        public DisplayConfigVideoOutputTechnology OutputTechnology => (DisplayConfigVideoOutputTechnology)outputTechnology;
+        public DisplayConfigRotation Rotation => (DisplayConfigRotation)rotation;
+        public DisplayConfigScaling Scaling => (DisplayConfigScaling)scaling;
+        public DisplayConfigScanLineOrdering ScanLineOrdering => (DisplayConfigScanLineOrdering)scanLineOrdering;
+        public DisplayConfigTargetStatus StatusFlags => (DisplayConfigTargetStatus)statusFlags;
 
         public override string ToString()
         {
             var nl = Environment.NewLine;
-            return $"AdapterId: {adapterId}{nl}" +
-                $"Id: {id}{nl}" +
-                $"ModeInfoIdx: {modeInfoIdx}{nl}" +
-                $"OutputTechnology: {outputTechnology}{nl}" +
-                $"Rotation: {rotation}{nl}" +
-                $"Scaling: {scaling}{nl}" +
-                $"RefreshRate: {refreshRate.numerator}/{refreshRate.denominator}{nl}" +
-                $"ScanLineOrdering: {scanLineOrdering}{nl}" +
-                $"TargetAvailable: {targetAvailable}{nl}" +
-                $"StatusFlags: {statusFlags}";
+            return $"AdapterId: {AdapterId}{nl}" +
+                $"Id: {Id}{nl}" +
+                $"ModeInfoIdx: {ModeInfoIdx}{nl}" +
+                $"OutputTechnology: {OutputTechnology}{nl}" +
+                $"Rotation: {Rotation}{nl}" +
+                $"Scaling: {Scaling}{nl}" +
+                $"RefreshRate: {RefreshRate.numerator}/{RefreshRate.denominator}{nl}" +
+                $"ScanLineOrdering: {ScanLineOrdering}{nl}" +
+                $"TargetAvailable: {TargetAvailable}{nl}" +
+                $"StatusFlags: {StatusFlags}";
         }
     }
 
@@ -425,303 +417,5 @@ namespace Mastersign.DisplayManager.WinApi
         Extend = 0x00000004,
         External = 0x00000008,
         ForceUint32 = 0xFFFFFFFF
-    }
-
-    // http://www.pinvoke.net/default.aspx/Structures/DEVMODE.html
-    // https://msdn.microsoft.com/en-us/library/ms812499.aspx
-    // https://stackoverflow.com/questions/19943907
-    // https://software.intel.com/en-us/articles/windows-8-desktop-app-desktop-rotation-sample-whitepaper
-
-    [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Ansi)]
-    public struct DEVMODE
-    {
-        public const int CCHDEVICENAME = 32;
-        public const int CCHFORMNAME = 32;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = CCHDEVICENAME)]
-        [FieldOffset(0)]
-        public string dmDeviceName;
-
-        [FieldOffset(32)]
-        public Int16 dmSpecVersion;
-
-        [FieldOffset(34)]
-        public Int16 dmDriverVersion;
-
-        [FieldOffset(36)]
-        public Int16 dmSize;
-
-        [FieldOffset(38)]
-        public Int16 dmDriverExtra;
-
-        [FieldOffset(40)]
-        public UInt32 dmFields;
-
-        // Printer Settings
-
-        //[FieldOffset(44)]
-        //Int16 dmOrientation;
-
-        //[FieldOffset(46)]
-        //Int16 dmPaperSize;
-
-        //[FieldOffset(48)]
-        //Int16 dmPaperLength;
-
-        //[FieldOffset(50)]
-        //Int16 dmPaperWidth;
-
-        //[FieldOffset(52)]
-        //Int16 dmScale;
-
-        //[FieldOffset(54)]
-        //Int16 dmCopies;
-
-        //[FieldOffset(56)]
-        //Int16 dmDefaultSource;
-
-        //[FieldOffset(58)]
-        //Int16 dmPrintQuality;
-
-        // Display Settings
-
-        [FieldOffset(44)]
-        public POINTL dmPosition;
-
-        [FieldOffset(52)]
-        public DMDISPLAYORIENTATION dmDisplayOrientation;
-
-        [FieldOffset(56)]
-        public Int32 dmDisplayFixedOutput;
-
-        // Printer Settings
-
-        //[FieldOffset(60)]
-        //public DMCOLOR dmColor;
-
-        //[FieldOffset(62)]
-        //public DMDUP dmDuplex;
-
-        //[FieldOffset(64)]
-        //public short dmYResolution;
-
-        //[FieldOffset(66)]
-        //public short dmTTOption;
-
-        //[FieldOffset(68)]
-        //public DMCOLLATE dmCollate;
-
-        //[FieldOffset(70)]
-        //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = CCHFORMNAME)]
-        //public string dmFormName;
-
-        [FieldOffset(102)]
-        public Int16 dmLogPixels;
-
-        [FieldOffset(104)]
-        public Int32 dmBitsPerPel;
-
-        [FieldOffset(108)]
-        public Int32 dmPelsWidth;
-
-        [FieldOffset(112)]
-        public Int32 dmPelsHeight;
-
-        // Display Settings
-
-        [FieldOffset(116)]
-        public Int32 dmDisplayFlags;
-
-        [FieldOffset(116)]
-        public Int32 dmNup;
-
-        [FieldOffset(120)]
-        public Int32 dmDisplayFrequency;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct POINTL
-    {
-        public int x;
-        public int y;
-    }
-
-    [Flags]
-    public enum DM_FIELDS : UInt32
-    {
-        DM_ORIENTATION = 0x00000001,
-        DM_PAPERSIZE = 0x00000002,
-        DM_PAPERLENGTH = 0x00000004,
-        DM_PAPERWIDTH = 0x00000008,
-        DM_SCALE = 0x00000010,
-        DM_POSITION = 0x00000020,
-        DM_NUP = 0x00000040,
-        DM_DISPLAYORIENTATION = 0x00000080,
-        DM_COPIES = 0x00000100,
-        DM_DEFAULTSOURCE = 0x00000200,
-        DM_PRINTQUALITY = 0x00000400,
-        DM_COLOR = 0x00000800,
-        DM_DUPLEX = 0x00001000,
-        DM_YRESOLUTION = 0x00002000,
-        DM_TTOPTION = 0x00004000,
-        DM_COLLATE = 0x00008000,
-        DM_FORMNAME = 0x00010000,
-        DM_LOGPIXELS = 0x00020000,
-        DM_BITSPERPEL = 0x00040000,
-        DM_PELSWIDTH = 0x00080000,
-        DM_PELSHEIGHT = 0x00100000,
-        DM_DISPLAYFLAGS = 0x00200000,
-        DM_DISPLAYFREQUENCY = 0x00400000,
-        DM_ICMMETHOD = 0x00800000,
-        DM_ICMINTENT = 0x01000000,
-        DM_MEDIATYPE = 0x02000000,
-        DM_DITHERTYPE = 0x04000000,
-        DM_PANNINGWIDTH = 0x08000000,
-        DM_PANNINGHEIGHT = 0x10000000,
-        DM_DISPLAYFIXEDOUTPUT = 0x20000000,
-    }
-
-    /// <summary>
-    /// Display Orientation
-    /// </summary>
-    public enum DMDISPLAYORIENTATION : Int32
-    {
-        DMDO_DEFAULT = 0,
-        DMDO_90 = 1,
-        DMDO_180 = 2,
-        DMDO_270 = 3,
-    }
-
-    /// <summary>
-    /// Switches between color and monochrome on color printers.
-    /// </summary>
-    public enum DMCOLOR : Int16
-    {
-        DMCOLOR_UNKNOWN = 0,
-        DMCOLOR_MONOCHROME = 1,
-        DMCOLOR_COLOR = 2,
-    }
-
-    /// <summary>
-    /// Selects duplex or double-sided printing for printers capable of duplex printing.
-    /// </summary>
-    public enum DMDUP : Int16
-    {
-        /// <summary>
-        /// Unknown setting.
-        /// </summary>
-        DMDUP_UNKNOWN = 0,
-
-        /// <summary>
-        /// Normal (nonduplex) printing.
-        /// </summary>
-        DMDUP_SIMPLEX = 1,
-
-        /// <summary>
-        /// Long-edge binding, that is, the long edge of the page is vertical.
-        /// </summary>
-        DMDUP_VERTICAL = 2,
-
-        /// <summary>
-        /// Short-edge binding, that is, the long edge of the page is horizontal.
-        /// </summary>
-        DMDUP_HORIZONTAL = 3,
-    }
-
-    /// <summary>
-    /// Specifies whether collation should be used when printing multiple copies.
-    /// </summary>
-    public enum DMCOLLATE : Int16
-    {
-        /// <summary>
-        /// Do not collate when printing multiple copies.
-        /// </summary>
-        DMCOLLATE_FALSE = 0,
-
-        /// <summary>
-        /// Collate when printing multiple copies.
-        /// </summary>
-        DMCOLLATE_TRUE = 1
-    }
-
-    public enum DISP_CHANGE : Int32
-    {
-        Successful = 0,
-        Restart = 1,
-        Failed = -1,
-        BadMode = -2,
-        NotUpdated = -3,
-        BadFlags = -4,
-        BadParam = -5,
-        BadDualView = -6
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct DISPLAY_DEVICE
-    {
-        [MarshalAs(UnmanagedType.U4)]
-        public int ddSize;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-        public string ddDeviceName;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string ddDeviceString;
-
-        [MarshalAs(UnmanagedType.U4)]
-        public DisplayDeviceStateFlags ddStateFlags;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string ddDeviceID;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string ddDeviceKey;
-    }
-
-    [Flags]
-    public enum DisplayDeviceStateFlags : Int32
-    {
-        Deactivated = 0x0,
-
-        /// <summary>The device is part of the desktop.</summary>
-        AttachedToDesktop = 0x1,
-
-        MultiDriver = 0x2,
-
-        /// <summary>The device is part of the desktop.</summary>
-        PrimaryDevice = 0x4,
-
-        /// <summary>Represents a pseudo device used to mirror application drawing for remoting or other purposes.</summary>
-        MirroringDriver = 0x8,
-
-        /// <summary>The device is VGA compatible.</summary>
-        VGACompatible = 0x10,
-
-        /// <summary>The device is removable; it cannot be the primary display.</summary>
-        Removable = 0x20,
-
-        /// <summary>The device has more display modes than its output devices support.</summary>
-        ModesPruned = 0x8000000,
-
-        Remote = 0x4000000,
-
-        Disconnect = 0x2000000,
-    }
-
-    [Flags()]
-    public enum ChangeDisplaySettingsFlags : UInt32
-    {
-        None = 0,
-        UpdateRegistry = 0x00000001,
-        Test = 0x00000002,
-        FullScreen = 0x00000004,
-        Global = 0x00000008,
-        SetPrimary = 0x00000010,
-        VideoParameters = 0x00000020,
-        EnableUnsafeModes = 0x00000100,
-        DisableUnsafeModes = 0x00000200,
-        Reset = 0x40000000,
-        ResetEx = 0x20000000,
-        NoReset = 0x10000000
     }
 }

@@ -8,18 +8,17 @@ using static Mastersign.DisplayManager.ConsoleFormat;
 
 namespace Mastersign.DisplayManager
 {
-    public class DisplayConfig
+    public class DisplayConfiguration
     {
         public DisplayConfigPathInfo[] DisplayPaths { get; set; }
 
         public DisplayConfigModeInfo[] DisplayModes { get; set; }
 
-        public DisplayConfig()
+        public DisplayConfiguration()
         {
-
         }
 
-        public DisplayConfig(DisplayConfigPathInfo[] displayPaths, DisplayConfigModeInfo[] displayModes)
+        public DisplayConfiguration(DisplayConfigPathInfo[] displayPaths, DisplayConfigModeInfo[] displayModes)
         {
             DisplayPaths = displayPaths;
             DisplayModes = displayModes;

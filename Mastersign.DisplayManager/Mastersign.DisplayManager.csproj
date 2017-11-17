@@ -44,29 +44,13 @@
   <ItemGroup>
     <Compile Include="ConsoleFormat.cs" />
     <Compile Include="DisplayConfig.cs" />
-    <Compile Include="DisplayDevice.cs" />
-    <Compile Include="DisplaySetting.cs" />
     <Compile Include="Manager.cs" />
-    <Compile Include="Model.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model.xml</DependentUpon>
-    </Compile>
-    <Compile Include="MonitorDevice.cs" />
-    <Compile Include="Point.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WinApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Model.xml">
-      <Generator>Scaleton Code Generator</Generator>
-      <LastGenOutput>Model.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
