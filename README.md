@@ -30,6 +30,8 @@ Now you have two recorded configurations and you can toggle between them
 It is a good idea to create links (shortcuts) for the different configurations, with nice icons, of course.
 You can place these links on the desktop or in a toolbar inside the taskbar.
 
+![Shortcuts in Taskbar](img/taskbar.png)
+
 ## Help Text
 
 ```
