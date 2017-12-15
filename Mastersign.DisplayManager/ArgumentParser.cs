@@ -33,15 +33,18 @@ namespace Mastersign.DisplayManager
             var persistentRestore = default(bool);
             var reset = default(bool);
 
+            var recognizedValidOption = false;
             for (int i = 0; i < Arguments.Length; i++)
             {
                 switch (Arguments[i])
                 {
                     case var flag when HELP_FLAGS.Contains(flag):
                         showHelp = true;
+                        recognizedValidOption = true;
                         break;
                     case var flag when VERSION_FLAGS.Contains(flag):
                         showVersion = true;
+                        recognizedValidOption = true;
                         break;
                     case var flag when SHOW_CONFIG_FLAGS.Contains(flag):
                         showConfig = true;
@@ -51,6 +54,7 @@ namespace Mastersign.DisplayManager
                         if (i < Arguments.Length)
                         {
                             recordTarget = Arguments[i];
+                            recognizedValidOption = true;
                         }
                         break;
                     case var flag when RESTORE_OPTIONS.Contains(flag):
@@ -58,15 +62,24 @@ namespace Mastersign.DisplayManager
                         if (i < Arguments.Length)
                         {
                             restoreSource = Arguments[i];
+                            recognizedValidOption = true;
                         }
                         break;
                     case var flag when PERSISTENT_RESTORE_FLAGS.Contains(flag):
                         persistentRestore = true;
+                        recognizedValidOption = true;
                         break;
                     case var flag when RESET_FLAGS.Contains(flag):
                         reset = true;
+                        recognizedValidOption = true;
                         break;
                 }
+            }
+
+            if (!recognizedValidOption && Arguments.Length == 1)
+            {
+                restoreSource = Arguments[0];
+                persistentRestore = true;
             }
 
             return new StartInfo(
