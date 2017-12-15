@@ -32,12 +32,14 @@ namespace Mastersign.DisplayManager
             return null;
         }
 
-        public static bool SetDisplayConfig(DisplayConfiguration config)
+        public static bool SetDisplayConfig(DisplayConfiguration config, bool persistent = false)
         {
+            var flags = SdcFlags.Apply | SdcFlags.UseSuppliedDisplayConfig;
+            if (persistent) flags |= SdcFlags.SaveToDatabase;
             var errorCode = User32.SetDisplayConfig(
                 (uint)config.DisplayPaths.Length, config.DisplayPaths,
                 (uint)config.DisplayModes.Length, config.DisplayModes,
-                SdcFlags.Apply | SdcFlags.UseSuppliedDisplayConfig);
+                flags);
             if (errorCode != 0)
             {
                 Console.Error.WriteLine("SetDisplayConfig Error: " + errorCode);
