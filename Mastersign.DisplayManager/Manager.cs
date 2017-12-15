@@ -45,6 +45,17 @@ namespace Mastersign.DisplayManager
             return errorCode == 0;
         }
 
+        public static bool ResetDisplayConfig()
+        {
+            var flags = SdcFlags.Apply | SdcFlags.UseDatabaseCurrent;
+            var errorCode = User32.SetDisplayConfig(0, null, 0, null, flags);
+            if (errorCode != 0)
+            {
+                Console.Error.WriteLine("ResetDisplayConfig Error: " + errorCode);
+            }
+            return errorCode == 0;
+        }
+
         public static void PatchDisplayConfig(DisplayConfiguration config)
         {
             var lookupConfig = QueryDisplayConfig(QueryDisplayFlags.AllPaths);
