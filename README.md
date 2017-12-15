@@ -132,7 +132,7 @@ The rest was easy. Thanks a lot guys, you saved my day!
 
 This project is released under the MIT license.
 
-Copyright © by Tobias Kiertscher <dev@mastersign.de>.
+Copyright &copy; by Tobias Kiertscher <dev@mastersign.de>.
 
 [release-url]: https://github.com/mastersign/Mastersign.DisplayManager/releases/latest/
 [release-img]: https://img.shields.io/github/release/mastersign/Mastersign.DisplayManager.svg?style=flat-square
