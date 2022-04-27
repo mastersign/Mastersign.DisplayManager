@@ -48,6 +48,7 @@ namespace Mastersign.DisplayManager
                         break;
                     case var flag when SHOW_CONFIG_FLAGS.Contains(flag):
                         showConfig = true;
+                        recognizedValidOption = true;
                         break;
                     case var flag when RECORD_OPTIONS.Contains(flag):
                         i++;
